@@ -17,17 +17,17 @@ set -e
 git commit -am "update" || true
 git push || true
 
-outpath=/g/data/ik11/inputs/access-om2/woa13
+outpath=/g/data/ik11/inputs/access-om3/woa23
 
 dirs=("10" "025" "01")
 for d in ${dirs[@]}; do
-   for f in ${outpath}/${d}/woa13_ts_??_mom${d}.nc; do
-      ncatted -O -h -a history,global,a,c," | Created on $(date) using https://github.com/COSIMA/initial_conditions_access-om2/tree/$(git rev-parse --short HEAD)" $f
+   for f in ${outpath}/${d}/woa23_ts_??_mom${d}.nc; do
+      ncatted -O -h -a history,global,a,c," | Created on $(date) using https://github.com/ACCESS-NRI/initial_conditions_access-om3.git/tree/$(git rev-parse --short HEAD)" $f
    done
 done
 
-for f in ${outpath}/monthly/woa13_*.nc; do
-      ncatted -O -h -a history,global,a,c," | Created on $(date) using https://github.com/COSIMA/initial_conditions_access-om2/tree/$(git rev-parse --short HEAD)" $f
+for f in ${outpath}/monthly/woa23_*.nc; do
+      ncatted -O -h -a history,global,a,c," | Created on $(date) using https://github.com/ACCESS-NRI/initial_conditions_access-om3.git/tree/$(git rev-parse --short HEAD)" $f
 done
 
 set +e
