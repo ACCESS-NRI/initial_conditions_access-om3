@@ -13,48 +13,44 @@ import numpy as np
 import netCDF4 as nc
 import matplotlib.pyplot as plt
 
-# paths
-src_data_dir = '/g/data/ik11/inputs/WOA13v2/averaged_decades/'
-# output paths
-dst_data_dir = '/g/data/ik11/inputs/access-om2/woa13/monthly/'
+# Usage: 
+# python setup_WOA_initial_conditions.py <src_data_dir> <dst_data_dir>
+# Example:
+# python setup_WOA_initial_conditions.py /path/to/source/dir /path/to/destination/dir
 
-print('Importing WOA13 raw data')
+src_data_dir = sys.argv[1]  # Source directory for WOA23 data, raw data stored in "/g/data/ik11/inputs/WOA23" 
+dst_data_dir = sys.argv[2]  # Destination directory to save output files
+
+print('Importing WOA23 raw data')
 mon = ['01','02','03','04','05','06','07','08','09','10','11','12']
 deepmon = ['13','13','13','14','14','14','15','15','15','16','16','16']
 i = 0
 for mm in range(0,len(mon)):
     i = i+1
     # get upper ocean temp data:
-    woa_file = src_data_dir+'woa13_decav_t'+mon[mm]+'_04v2.nc'
+    woa_file = src_data_dir+'woa23_decav_t'+mon[mm]+'_04.nc'
     print(woa_file)
     ncFile = nc.Dataset(woa_file)
     lat = ncFile.variables['lat'][...]
-    #lat_bnds = ncFile.variables['lat_bnds'][...]
-    #lon_bnds = ncFile.variables['lon_bnds'][...]
-    #depth_upper_bnds = ncFile.variables['depth_bnds'][...]
     depth_upper = ncFile.variables['depth'][...]
     lon = ncFile.variables['lon'][...]
     t_in_situ_upper = ncFile.variables['t_an'][0,...]
-    #time = ncFile.variables['time'][...]
 
     # get upper ocean salinity data:
-    #woa_file = data_dir+'woa13_decav_s01_04v2.nc'
-    woa_file = src_data_dir+'woa13_decav_s'+mon[mm]+'_04v2.nc'
+    woa_file = src_data_dir+'woa23_decav_s'+mon[mm]+'_04.nc'
     print(woa_file)
     ncFile = nc.Dataset(woa_file)
     s_practical_upper = ncFile.variables['s_an'][0,...]
 
     # get lower ocean temp data:
-    #woa_file = data_dir+'woa13_decav_t13_04v2.nc'
-    woa_file = src_data_dir+'woa13_decav_t'+deepmon[mm]+'_04v2.nc'
+    woa_file = src_data_dir+'woa23_decav_t'+deepmon[mm]+'_04.nc'
     print(woa_file)
     ncFile = nc.Dataset(woa_file)
     depth_lower = ncFile.variables['depth'][...]
     t_in_situ_lower = ncFile.variables['t_an'][0,...]
     
     # get lower ocean salinity data:
-    #woa_file = data_dir+'woa13_decav_s13_04v2.nc'
-    woa_file = src_data_dir+'woa13_decav_s'+deepmon[mm]+'_04v2.nc'
+    woa_file = src_data_dir+'woa23_decav_s'+deepmon[mm]+'_04.nc'
     print(woa_file)
     ncFile = nc.Dataset(woa_file)
     s_practical_lower = ncFile.variables['s_an'][0,...]
@@ -93,8 +89,7 @@ for mm in range(0,len(mon)):
     t_conservative = gsw.CT_from_t(s_absolute,t_in_situ,pressure_tile)
     
     # save to netcdf
-    #save_file = data_dir + 'woa13_decav_ts_jan_04v2.nc'
-    save_file = dst_data_dir + 'woa13_decav_ts_'+mon[mm]+'_04v2.nc'
+    save_file = dst_data_dir + 'woa23_decav_ts_'+mon[mm]+'_04.nc'
     print(save_file)
     ncFile = nc.Dataset(save_file,'r+')
     
@@ -111,14 +106,6 @@ for mm in range(0,len(mon)):
     t_var.long_name = 'conservative temperature calculated using teos10 from objectively'+\
     	' analysed mean fields for sea_water_temperature'
     t_var[0,:] = t_conservative
-
-#s_var = ncFile.createVariable('practical_salinity', 'f4', ('time','depth','lat','lon'),fill_value=9.96921e+36)
-#s_var.units = '1'
-#s_var.grid_mapping = "crs"
-#s_var.long_name = 'Objectively analyzed mean fields for sea_water_salinity at standard depth levels.'
-#s_var.missing_value =  9.96921e+36
-#s_practical[np.where(np.isnan(s_practical)==True)] = 9.96921e+36
-#s_var[0,:] = s_practical
 
 ncFile.close()
 

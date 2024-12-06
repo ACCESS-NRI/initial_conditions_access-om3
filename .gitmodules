@@ -1,3 +1,3 @@
-[submodule "initial_conditions_WOA"]
-	path = initial_conditions_WOA
-	url = https://github.com/COSIMA/initial_conditions_WOA.git
+[submodule "initial_conditions_WOA23/ocean-ic"]
+	path = initial_conditions_WOA23/ocean-ic
+	url = git@github.com:COSIMA/ocean-ic.git
