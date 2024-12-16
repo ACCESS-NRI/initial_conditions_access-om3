@@ -1,5 +1,4 @@
 #!/bin/bash
-#PBS -P x77
 #PBS -q normal
 #PBS -l mem=64Gb
 #PBS -l walltime=10:00:00
