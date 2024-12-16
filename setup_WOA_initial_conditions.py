@@ -11,7 +11,6 @@ from glob import glob
 import os,sys
 import numpy as np
 import netCDF4 as nc
-import matplotlib.pyplot as plt
 
 # Usage: 
 # python setup_WOA_initial_conditions.py <src_data_dir> <dst_data_dir>
