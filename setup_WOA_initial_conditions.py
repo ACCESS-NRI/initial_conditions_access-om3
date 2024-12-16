@@ -6,6 +6,12 @@
 ##                                                ##
 ####################################################
 
+# Description:
+# This script processes WOA23 temperature and salinity data 
+# to create initial condition files. It combines applies masks 
+# to filter invalid data, calculates pressure, absolute salinity, 
+# and conservative temperature.
+
 # import modules
 from glob import glob
 import os,sys
