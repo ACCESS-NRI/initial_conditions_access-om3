@@ -1,4 +1,6 @@
 #!/usr/bin/env sh
+# Copyright 2023 ACCESS-NRI and contributors. See the top-level COPYRIGHT file for details.
+# SPDX-License-Identifier: Apache-2.0
 
 srcpath=/g/data/ik11/inputs/access-om3/woa23
 dstpath=/g/data/ik11/inputs/access-om3/input_rc

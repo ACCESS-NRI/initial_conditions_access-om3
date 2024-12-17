@@ -1,4 +1,7 @@
 #!/bin/bash
+# Copyright 2023 ACCESS-NRI and contributors. See the top-level COPYRIGHT file for details.
+# SPDX-License-Identifier: Apache-2.0
+
 #PBS -q normal
 #PBS -l mem=64Gb
 #PBS -l walltime=1:00:00

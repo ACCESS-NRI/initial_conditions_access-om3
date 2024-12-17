@@ -1,5 +1,10 @@
 #!/bin/csh -f
+# Copyright 2023 ACCESS-NRI and contributors. See the top-level COPYRIGHT file for details.
+# SPDX-License-Identifier: Apache-2.0
 
+source /etc/profile.d/modules.csh
+
+module purge
 module use /g/data/hh5/public/modules
 module load conda/analysis3
 module load nco
