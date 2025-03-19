@@ -21,7 +21,7 @@ git push || true
 
 outpath=/g/data/ik11/inputs/access-om3/woa23
 
-dirs=("10" "025" "01")
+dirs=("025")
 for d in ${dirs[@]}; do
    for f in ${outpath}/${d}/woa23_ts_??_mom${d}.nc; do
       ncatted -O -h -a history,global,a,c," | Created on $(date) using https://github.com/ACCESS-NRI/initial_conditions_access-om3.git/tree/$(git rev-parse --short HEAD)" $f
