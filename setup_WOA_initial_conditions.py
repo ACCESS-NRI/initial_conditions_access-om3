@@ -14,7 +14,7 @@
 
 # import modules
 from glob import glob
-import os,sys
+import sys
 import numpy as np
 import netCDF4 as nc
 
