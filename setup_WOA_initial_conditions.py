@@ -17,6 +17,7 @@ from glob import glob
 import sys
 import numpy as np
 import netCDF4 as nc
+import datetime
 
 # Usage: 
 # python setup_WOA_initial_conditions.py <src_data_dir> <dst_data_dir>
@@ -111,6 +112,15 @@ for mm in range(0,len(mon)):
     t_var.long_name = 'conservative temperature calculated using teos10 from objectively'+\
     	' analysed mean fields for sea_water_temperature'
     t_var[0,:] = t_conservative
+
+    now = datetime.datetime.now()
+
+    # Add or update global attributes for metadata
+    ncFile.setncattr('Conventions', 'CF-1.7')
+    ncFile.setncattr('title', 'WOA23-derived temperature and salinity fields with conservative temperature')
+    ncFile.setncattr('summary', 'Conservative temperature computed from in-situ temperature and practical salinity using TEOS-10 via the GSW library')
+    ncFile.setncattr('source', 'Data derived from NOAA World Ocean Atlas 2023 (WOA23) objective analyses')
+    ncFile.setncattr('history', f'{now.strftime("%Y-%m-%d %H:%M:%S")} - conservative_temperature and practical_salinity updated using setup_WOA_initial_conditions.py')
 
 ncFile.close()
 
