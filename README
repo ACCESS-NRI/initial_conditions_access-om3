@@ -3,7 +3,7 @@ Tools to produce conservative temperature and salinity from World Ocean Atlas 20
 	1. Run inte.csh to create temperature and salinity files, using monthly data instead of 
            seasonal dta in the upper 1500m. Results are put in /g/data/ik11/inputs/access-om3/woa23/monthly
 
-	2. Run make_inital_conditions.sh in the directory initial_conditions_WOA/ for regridding.
+	2. Run make_initial_conditions.sh in the directory initial_conditions_WOA/ to regrid temperature and salinity onto the ACCESS-OM3 horizontal and vertical grids. 
            Results are put in /g/data/ik11/inputs/access-om3/woa23/[01]*
 
 	3. If you're happy with the results, run finalise.sh to git commit and add commit info to the .nc metadata
