@@ -4,11 +4,8 @@ Tools to produce conservative temperature and salinity from World Ocean Atlas 20
            seasonal dta in the upper 1500m. Results are put in /g/data/ik11/inputs/access-om3/woa23/monthly
 
 	2. Run make_initial_conditions.sh in the directory initial_conditions_WOA/ to regrid temperature and salinity onto the ACCESS-OM3 horizontal and vertical grids. 
-           Results are put in /g/data/ik11/inputs/access-om3/woa23/[01]*
-
+           
 	3. If you're happy with the results, run finalise.sh to git commit and add commit info to the .nc metadata
-
-	4. If you have permissions you can run copy_to_input_rc.sh to copy January initial conditions to /g/data/ik11/inputs/access-om3/input_rc
 
 This repository contains submodules, so clone it with
 
