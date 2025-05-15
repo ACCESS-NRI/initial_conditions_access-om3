@@ -145,6 +145,7 @@ for mm in range(0, len(mon)):
     t_var = ncFile.createVariable('conservative_temperature', 'f4', ('time','depth',\
                    'lat','lon'),fill_value=9.96921e+36)
     t_var.units = 'degrees celsius'
+    t_var.standard_name = 'sea_water_conservative_temperature'
     t_var.long_name = 'conservative temperature calculated using teos10 from objectively'+\
     	' analysed mean fields for sea_water_temperature'
     t_var.cell_methods = 'area: mean depth: mean time: mean within years time: mean over years'
