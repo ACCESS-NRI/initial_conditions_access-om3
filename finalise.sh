@@ -1,5 +1,5 @@
 #!/usr/bin/env sh
-# Copyright 2023 ACCESS-NRI and contributors. See the top-level COPYRIGHT file for details.
+# Copyright 2025 ACCESS-NRI and contributors. See the top-level COPYRIGHT file for details.
 # SPDX-License-Identifier: Apache-2.0
 # Commit changes and push, then add metadata to note how changes were made
 

@@ -1,5 +1,5 @@
 #!/bin/csh -f
-# Copyright 2023 ACCESS-NRI and contributors. See the top-level COPYRIGHT file for details.
+# Copyright 2025 ACCESS-NRI and contributors. See the top-level COPYRIGHT file for details.
 # SPDX-License-Identifier: Apache-2.0
 
 #==================================================================
@@ -18,7 +18,7 @@
 #    to each month.
 # 2. using 'ncks --mk_rec time' to add unlimited attribute of time.
 # 3. rename salinity name from 's_an' to 'practical_salinity' 
-# 4. using 'setup_WOA_initial_conditions.py' to processing the 
+# 4. using 'setup_WOA_initial_conditions.py' to process the 
 #    conservative temperature.
 #==================================================================
 
