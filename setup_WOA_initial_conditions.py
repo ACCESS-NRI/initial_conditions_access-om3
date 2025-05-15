@@ -1,4 +1,6 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
+# Copyright 2025 ACCESS-NRI and contributors. See the top-level COPYRIGHT file for details.
+# SPDX-License-Identifier: Apache-2.0
 
 ####################################################
 ##                                                ## 
@@ -13,11 +15,18 @@
 # and conservative temperature.
 
 # import modules
-from glob import glob
 import sys
 import numpy as np
 import netCDF4 as nc
 import datetime
+from dateutil.relativedelta import relativedelta
+
+from pathlib import Path
+import sys
+
+path_root = Path(__file__).parents[0]
+sys.path.append(str(path_root)+"/initial_conditions_WOA23/ocean-ic/")
+from regridder import util
 
 # Usage: 
 # python setup_WOA_initial_conditions.py <src_data_dir> <dst_data_dir>
@@ -30,8 +39,14 @@ dst_data_dir = sys.argv[2]  # Destination directory to save output files
 print('Importing WOA23 raw data')
 mon = ['01','02','03','04','05','06','07','08','09','10','11','12']
 deepmon = ['13','13','13','14','14','14','15','15','15','16','16','16']
+
+# in a climatology, with 365 day calendar, whats the day of the middle of each month
+DAY_IN_MONTH = [
+    15.5,45,74.5,105,135.5,166,196.5,227.5,258,288.5,319,349.5
+]
+
 i = 0
-for mm in range(0,len(mon)):
+for mm in range(0, len(mon)):
     i = i+1
     # get upper ocean temp data:
     woa_file = src_data_dir+'woa23_decav_t'+mon[mm]+'_04.nc'
@@ -41,12 +56,14 @@ for mm in range(0,len(mon)):
     depth_upper = ncFile.variables['depth'][...]
     lon = ncFile.variables['lon'][...]
     t_in_situ_upper = ncFile.variables['t_an'][0,...]
+    ncFile.close()
 
     # get upper ocean salinity data:
     woa_file = src_data_dir+'woa23_decav_s'+mon[mm]+'_04.nc'
     print(woa_file)
     ncFile = nc.Dataset(woa_file)
     s_practical_upper = ncFile.variables['s_an'][0,...]
+    ncFile.close()
 
     # get lower ocean temp data:
     woa_file = src_data_dir+'woa23_decav_t'+deepmon[mm]+'_04.nc'
@@ -54,12 +71,14 @@ for mm in range(0,len(mon)):
     ncFile = nc.Dataset(woa_file)
     depth_lower = ncFile.variables['depth'][...]
     t_in_situ_lower = ncFile.variables['t_an'][0,...]
+    ncFile.close()
     
     # get lower ocean salinity data:
     woa_file = src_data_dir+'woa23_decav_s'+deepmon[mm]+'_04.nc'
     print(woa_file)
     ncFile = nc.Dataset(woa_file)
     s_practical_lower = ncFile.variables['s_an'][0,...]
+    ncFile.close()
     
     # combine January for upper ocean with winter below 1500m:
     t_in_situ = np.copy(t_in_situ_lower)
@@ -98,12 +117,29 @@ for mm in range(0,len(mon)):
     save_file = dst_data_dir + 'woa23_decav_ts_'+mon[mm]+'_04.nc'
     print(save_file)
     ncFile = nc.Dataset(save_file,'r+')
-    
-    # overwrite time
-    ncFile.variables['time'][0] = i
-    ncFile.variables['time'].units = 'months since 0001-01-01 00:00:00'
+
+	# convert months since to days for cf-compliance
+    time_var = ncFile.variables['time']
+    time_origin = util.get_time_origin(src_data_dir+'woa23_decav_t'+mon[mm]+'_04.nc')
+    if ('months since' in time_var.units):
+        bounds_month = ncFile.variables['climatology_bounds'][0].data
+        td = [relativedelta(months=iMonth) for iMonth in bounds_month]
+        bounds_day = [time_origin+iD for iD in td]
+        ncFile.variables['climatology_bounds'][0,...]  = [
+            (iDay-time_origin).days for iDay in bounds_day
+        ]
+
+    time_var[0] = DAY_IN_MONTH[mm]
+    time_var.units = (
+		"days since {}-{}-{} 00:00:00".format(str(time_origin.year).zfill(4),
+                                              str(time_origin.month).zfill(2),
+                                              str(time_origin.day).zfill(2))
+    )
+    ncFile.time_coverage_resolution = "P01M"
+
     # overwrite salinity with data including January near surface values:
     ncFile.variables['practical_salinity'][0,...] = s_practical
+    ncFile.variables['practical_salinity'].cell_methods = 'area: mean depth: mean time: mean within years time: mean over years'
     
     # add variable for conservative temperature:
     t_var = ncFile.createVariable('conservative_temperature', 'f4', ('time','depth',\
@@ -111,16 +147,19 @@ for mm in range(0,len(mon)):
     t_var.units = 'degrees celsius'
     t_var.long_name = 'conservative temperature calculated using teos10 from objectively'+\
     	' analysed mean fields for sea_water_temperature'
+    t_var.cell_methods = 'area: mean depth: mean time: mean within years time: mean over years'
     t_var[0,:] = t_conservative
 
     now = datetime.datetime.now()
 
     # Add or update global attributes for metadata
-    ncFile.setncattr('Conventions', 'CF-1.7')
+    ncFile.setncattr('Conventions', 'CF-1.10')
+    ncFile.delncattr('featureType')
+    ncFile.delncattr('id')
     ncFile.setncattr('title', 'WOA23-derived temperature and salinity fields with conservative temperature')
     ncFile.setncattr('summary', 'Conservative temperature computed from in-situ temperature and practical salinity using TEOS-10 via the GSW library')
     ncFile.setncattr('source', 'Data derived from NOAA World Ocean Atlas 2023 (WOA23) objective analyses')
     ncFile.setncattr('history', f'{now.strftime("%Y-%m-%d %H:%M:%S")} - conservative_temperature and practical_salinity updated using setup_WOA_initial_conditions.py')
 
-ncFile.close()
+    ncFile.close()
 
