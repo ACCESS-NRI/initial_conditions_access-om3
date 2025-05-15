@@ -1,12 +1,12 @@
 #!/bin/bash
-# Copyright 2023 ACCESS-NRI and contributors. See the top-level COPYRIGHT file for details.
+# Copyright 2025 ACCESS-NRI and contributors. See the top-level COPYRIGHT file for details.
 # SPDX-License-Identifier: Apache-2.0
 
 #PBS -q normal
 #PBS -l mem=64Gb
 #PBS -l walltime=48:00:00
 #PBS -l jobfs=400GB
-#PBS -l ncpus=48
+#PBS -l ncpus=8
 #PBS -l wd
 #PBS -l storage=gdata/hh5+gdata/ik11+gdata/tm70+gdata/vk83
 
@@ -34,7 +34,7 @@ for ((i=1; i<=12; i++))
 do
     printf -v mon "%02d" "${i}"
     INPUT_FILE="${INPUT_DIR}/woa23_decav_ts_${mon}_04.nc"
-    OUTPUT_FILE="${OUTPUT_DIR}/woa23_ts_${mon}_mom025.nc"
+    OUTPUT_FILE="${OUTPUT_DIR}/woa23_ts_${mon}_mom.nc"
 
     echo "Processing: ${INPUT_FILE}"
     ln -sf "${INPUT_FILE}" input.nc
