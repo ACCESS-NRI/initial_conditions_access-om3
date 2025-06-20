@@ -22,11 +22,65 @@ import datetime
 from dateutil.relativedelta import relativedelta
 
 from pathlib import Path
-import sys
 
 path_root = Path(__file__).parents[0]
 sys.path.append(str(path_root)+"/initial_conditions_WOA23/ocean-ic/")
 from regridder import util
+
+def md5sum(path):
+    """
+    Return the md5 hash of a provided file, reading in chunks to reduce memory usage for
+    large files.
+    From https://stackoverflow.com/a/40961519
+    """
+    import io
+    import hashlib
+
+    length = io.DEFAULT_BUFFER_SIZE
+    md5 = hashlib.md5()
+    with io.open(path, mode="rb") as fd:
+        for chunk in iter(lambda: fd.read(length), b""):
+            md5.update(chunk)
+    return md5.hexdigest()
+
+def get_git_url(file):
+    """
+    If the provided file is in a git repo, return the url to its most recent commit remote.origin.
+    """
+    import subprocess
+    import os
+
+    dirname = os.path.dirname(file)
+
+    try:
+        url = (
+            subprocess.check_output(
+                ["git", "-C", dirname, "config", "--get", "remote.origin.url"]
+            )
+            .decode("ascii")
+            .strip()
+        )
+        url = url.removesuffix(".git")
+    except subprocess.CalledProcessError:
+        return None
+
+    if url.startswith("git@github.com:"):
+        url = f"https://github.com/{url.removeprefix('git@github.com:')}"
+
+    top_level_dir = (
+        subprocess.check_output(["git", "-C", dirname, "rev-parse", "--show-toplevel"])
+        .decode("ascii")
+        .strip()
+    )
+    rel_path = file.removeprefix(top_level_dir)
+
+    hash = (
+        subprocess.check_output(["git", "-C", dirname, "rev-parse", "HEAD"])
+        .decode("ascii")
+        .strip()
+    )
+
+    return f"{url}/blob/{hash}{rel_path}"
 
 # Usage: 
 # python setup_WOA_initial_conditions.py <src_data_dir> <dst_data_dir>
@@ -51,6 +105,7 @@ for mm in range(0, len(mon)):
     # get upper ocean temp data:
     woa_file = src_data_dir+'woa23_decav_t'+mon[mm]+'_04.nc'
     print(woa_file)
+    input_files = f"{woa_file} (md5sum: {md5sum(woa_file)}), "
     ncFile = nc.Dataset(woa_file)
     lat = ncFile.variables['lat'][...]
     depth_upper = ncFile.variables['depth'][...]
@@ -61,6 +116,7 @@ for mm in range(0, len(mon)):
     # get upper ocean salinity data:
     woa_file = src_data_dir+'woa23_decav_s'+mon[mm]+'_04.nc'
     print(woa_file)
+    input_files += f"{woa_file} (md5sum: {md5sum(woa_file)}), "
     ncFile = nc.Dataset(woa_file)
     s_practical_upper = ncFile.variables['s_an'][0,...]
     ncFile.close()
@@ -68,6 +124,7 @@ for mm in range(0, len(mon)):
     # get lower ocean temp data:
     woa_file = src_data_dir+'woa23_decav_t'+deepmon[mm]+'_04.nc'
     print(woa_file)
+    input_files += f"{woa_file} (md5sum: {md5sum(woa_file)}), "
     ncFile = nc.Dataset(woa_file)
     depth_lower = ncFile.variables['depth'][...]
     t_in_situ_lower = ncFile.variables['t_an'][0,...]
@@ -76,6 +133,7 @@ for mm in range(0, len(mon)):
     # get lower ocean salinity data:
     woa_file = src_data_dir+'woa23_decav_s'+deepmon[mm]+'_04.nc'
     print(woa_file)
+    input_files += f"{woa_file} (md5sum: {md5sum(woa_file)}), "
     ncFile = nc.Dataset(woa_file)
     s_practical_lower = ncFile.variables['s_an'][0,...]
     ncFile.close()
@@ -160,7 +218,7 @@ for mm in range(0, len(mon)):
     ncFile.setncattr('title', 'WOA23-derived temperature and salinity fields with conservative temperature')
     ncFile.setncattr('summary', 'Conservative temperature computed from in-situ temperature and practical salinity using TEOS-10 via the GSW library')
     ncFile.setncattr('source', 'Data derived from NOAA World Ocean Atlas 2023 (WOA23) objective analyses')
-    ncFile.setncattr('history', f'{now.strftime("%Y-%m-%d %H:%M:%S")} - conservative_temperature and practical_salinity updated using setup_WOA_initial_conditions.py')
+    ncFile.setncattr('history2', f'{now.strftime("%Y-%m-%d %H:%M:%S")} - conservative_temperature and practical_salinity updated using setup_WOA_initial_conditions.py using {get_git_url(__file__)} with input files: {input_files}')
 
     ncFile.close()
 

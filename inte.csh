@@ -30,7 +30,7 @@ module load conda/analysis3
 module load nco
 
 set src_dir = /g/data/ik11/inputs/WOA23
-set dst_dir = /g/data/ik11/inputs/access-om3/woa23/monthly
+set dst_dir = /g/data/ik11/inputs/access-om3/woa23/monthly/$(date +"%Y.%m.%d")/
 
 mkdir -p $dst_dir
 
