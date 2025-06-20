@@ -2,8 +2,9 @@
 # Copyright 2025 ACCESS-NRI and contributors. See the top-level COPYRIGHT file for details.
 # SPDX-License-Identifier: Apache-2.0
 
+#PBS -q normal
 #PBS -l mem=64Gb
-#PBS -l walltime=24:00:00
+#PBS -l walltime=48:00:00
 #PBS -l jobfs=400GB
 #PBS -l ncpus=8
 #PBS -l wd
@@ -39,7 +40,7 @@ do
     echo "Processing: ${INPUT_FILE}"
     ln -sf "${INPUT_FILE}" input.nc
 
-    # makeic.py --use_mpi --mom_version MOM6 WOA input.nc input.nc input.nc input.nc MOM ocean_hgrid.nc ocean_vgrid.nc "${OUTPUT_FILE}"
+    makeic.py --use_mpi --mom_version MOM6 WOA input.nc input.nc input.nc input.nc MOM ocean_hgrid.nc ocean_vgrid.nc "${OUTPUT_FILE}"
 
     ncatted -h -O -a input_file,global,o,c,"$INPUT_FILE (md5sum: $(md5sum $INPUT_FILE | cut -f 1 -d ' '))" $OUTPUT_FILE
     ncatted -h -O -a ocean_hgrid_file,global,o,c,"$HGRID (md5sum: $(md5sum $HGRID | cut -f 1 -d ' '))" $OUTPUT_FILE
