@@ -10,7 +10,8 @@
 #PBS -l wd
 #PBS -l storage=gdata/hh5+gdata/ik11+gdata/tm70+gdata/vk83
 
-GRIDDIR=$GRIDDIR
+HGRID=$HGRID
+VGRID=$VGRID
 INPUT_DIR=$INPUT_DIR
 OUTPUT_DIR=$OUTPUT_DIR
 
@@ -20,8 +21,8 @@ module load conda/analysis3
 module load esmf
 
 # Link grid files
-ln -sf "${GRIDDIR}/ocean_hgrid.nc" ocean_hgrid.nc
-ln -sf "${GRIDDIR}/ocean_vgrid.nc" ocean_vgrid.nc
+ln -sf ${HGRID} ocean_hgrid.nc
+ln -sf ${VGRID} ocean_vgrid.nc
 
 PATH=./ocean-ic/:$PATH
 echo $PATH
@@ -40,4 +41,9 @@ do
     ln -sf "${INPUT_FILE}" input.nc
 
     makeic.py --use_mpi --mom_version MOM6 WOA input.nc input.nc input.nc input.nc MOM ocean_hgrid.nc ocean_vgrid.nc "${OUTPUT_FILE}"
+
+    ncatted -h -O -a input_file,global,o,c,"$INPUT_FILE (md5sum: $(md5sum $INPUT_FILE | cut -f 1 -d ' '))" $OUTPUT_FILE
+    ncatted -h -O -a ocean_hgrid_file,global,o,c,"$HGRID (md5sum: $(md5sum $HGRID | cut -f 1 -d ' '))" $OUTPUT_FILE
+    ncatted -h -O -a ocean_vgrid_file,global,o,c,"$VGRID (md5sum: $(md5sum $VGRID | cut -f 1 -d ' '))" $OUTPUT_FILE
+
 done

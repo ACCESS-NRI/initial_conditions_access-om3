@@ -37,13 +37,13 @@ git commit -am "update" || true
 git push || true
 
 for f in ${outpath}/${d}/woa23_ts_??_mom.nc; do
-      ncatted -O -h -a history,global,a,c," | Created on $(date) using https://github.com/ACCESS-NRI/initial_conditions_access-om3.git/tree/$(git rev-parse --short HEAD)" $f
+      ncatted -O -h -a history,global,a,c," | Created on $(date) using https://github.com/ACCESS-NRI/initial_conditions_access-om3/tree/$(git rev-parse --short HEAD)" $f
 done
 
 parent_outpath=$(dirname "$outpath")
 
 for f in ${parent_outpath}/monthly/woa23_*.nc; do
-      ncatted -O -h -a history,global,a,c," | Created on $(date) using https://github.com/ACCESS-NRI/initial_conditions_access-om3.git/tree/$(git rev-parse --short HEAD)" $f
+      ncatted -O -h -a history,global,a,c," | Created on $(date) using https://github.com/ACCESS-NRI/initial_conditions_access-om3/tree/$(git rev-parse --short HEAD)" $f
 done
 
 set +e
