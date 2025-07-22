@@ -4,7 +4,7 @@ This repository contains the tools and scripts to generate initial condition fil
 
 # Generate Initial Conditions
 
-This script generates initial condition files for a specific MOM ocean grid using WOA23 data. The grid and data paths are provided as environment variables, execute the following script with the grid, input and output directories as a command-line argument:
+This script generates initial condition files for a specific MOM ocean grid using WOA23 data. 
 
 `qsub -v VGRID="<path_to_vgrid_file>",HGRID="<path_to_hgrid_file>",INPUT_DIR="<path_to_input_directory>",OUTPUT_DIR="<path_to_output_directory>" -P $PROJECT make_initial_conditions.sh`
 
