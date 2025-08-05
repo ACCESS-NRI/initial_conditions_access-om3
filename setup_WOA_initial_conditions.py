@@ -103,7 +103,7 @@ i = 0
 for mm in range(0, len(mon)):
     i = i+1
     # get upper ocean temp data:
-    woa_file = src_data_dir+'woa23_decav_t'+mon[mm]+'_04.nc'
+    woa_file = src_data_dir+'/woa23_decav_t'+mon[mm]+'_04.nc'
     print(woa_file)
     input_files = f"{woa_file} (md5sum: {md5sum(woa_file)}), "
     ncFile = nc.Dataset(woa_file)
@@ -114,7 +114,7 @@ for mm in range(0, len(mon)):
     ncFile.close()
 
     # get upper ocean salinity data:
-    woa_file = src_data_dir+'woa23_decav_s'+mon[mm]+'_04.nc'
+    woa_file = src_data_dir+'/woa23_decav_s'+mon[mm]+'_04.nc'
     print(woa_file)
     input_files += f"{woa_file} (md5sum: {md5sum(woa_file)}), "
     ncFile = nc.Dataset(woa_file)
@@ -122,7 +122,7 @@ for mm in range(0, len(mon)):
     ncFile.close()
 
     # get lower ocean temp data:
-    woa_file = src_data_dir+'woa23_decav_t'+deepmon[mm]+'_04.nc'
+    woa_file = src_data_dir+'/woa23_decav_t'+deepmon[mm]+'_04.nc'
     print(woa_file)
     input_files += f"{woa_file} (md5sum: {md5sum(woa_file)}), "
     ncFile = nc.Dataset(woa_file)
@@ -131,7 +131,7 @@ for mm in range(0, len(mon)):
     ncFile.close()
     
     # get lower ocean salinity data:
-    woa_file = src_data_dir+'woa23_decav_s'+deepmon[mm]+'_04.nc'
+    woa_file = src_data_dir+'/woa23_decav_s'+deepmon[mm]+'_04.nc'
     print(woa_file)
     input_files += f"{woa_file} (md5sum: {md5sum(woa_file)}), "
     ncFile = nc.Dataset(woa_file)
@@ -198,6 +198,16 @@ for mm in range(0, len(mon)):
     # overwrite salinity with data including January near surface values:
     ncFile.variables['practical_salinity'][0,...] = s_practical
     ncFile.variables['practical_salinity'].cell_methods = 'area: mean depth: mean time: mean within years time: mean over years'
+    
+    # add variable for absolute salinity
+    s_var = ncFile.createVariable('absolute_salinity', 'f4', ('time','depth',\
+                   'lat','lon'),fill_value=9.96921e+36)
+    s_var.units = 'g kg-1'
+    s_var.standard_name = 'sea_water_absolute_salinity'
+    s_var.long_name = 'absolute salinity calculated using teos10 from'+\
+    	' practical salinity'
+    s_var.cell_methods = ncFile.variables['absolute_salinity'].cell_methods = 'area: mean depth: mean time: mean within years time: mean over years'
+    s_var[0,:] = s_absolute
     
     # add variable for conservative temperature:
     t_var = ncFile.createVariable('conservative_temperature', 'f4', ('time','depth',\
