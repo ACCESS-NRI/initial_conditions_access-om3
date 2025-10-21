@@ -170,6 +170,9 @@ for mm in range(0, len(mon)):
     
     print('Calculating conservative temperature from in situ temperature')
     t_conservative = gsw.CT_from_t(s_absolute,t_in_situ,pressure_tile)
+
+    print('Calculating potential temperature from in situ temperature')
+    t_potential = gsw.pt0_from_t(s_absolute,t_in_situ,pressure_tile)
     
     # save to netcdf
     save_file = dst_data_dir + 'woa23_decav_ts_'+mon[mm]+'_04.nc'
@@ -218,6 +221,16 @@ for mm in range(0, len(mon)):
     	' analysed mean fields for sea_water_temperature'
     t_var.cell_methods = 'area: mean depth: mean time: mean within years time: mean over years'
     t_var[0,:] = t_conservative
+
+    # add variable for potential temperature:
+    t_var = ncFile.createVariable('potential_temperature', 'f4', ('time','depth',\
+                   'lat','lon'),fill_value=9.96921e+36)
+    t_var.units = 'degrees celsius'
+    t_var.standard_name = 'sea_water_potential_temperature'
+    t_var.long_name = 'potential temperature with reference pressure, p_ref = 0 dbar calculated'+\
+        ' using teos10 from objectively analysed mean fields for sea_water_temperature'
+    t_var.cell_methods = 'area: mean depth: mean time: mean within years time: mean over years'
+    t_var[0,:] = t_potential
 
     now = datetime.datetime.now()
 
