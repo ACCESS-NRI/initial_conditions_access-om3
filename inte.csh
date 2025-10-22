@@ -25,11 +25,11 @@
 source /etc/profile.d/modules.csh
 
 module purge
-module use /g/data/hh5/public/modules
+module use /g/data/xp65/public/modules
 module load conda/analysis3
 module load nco
 
-set src_dir = /g/data/ik11/inputs/WOA23
+set src_dir = /g/data/av17/access-nri/OM3/woa23
 set dst_dir = /g/data/ik11/inputs/access-om3/woa23/monthly/`date +"%Y.%m.%d"`
 
 mkdir -p $dst_dir
@@ -82,6 +82,6 @@ ncrename -v s_an,practical_salinity $dst_dir/woa23_decav_ts_`printf "%02d" {$imo
 @ imon ++
 end
 
-echo 'processing conservative temperature'
+echo 'processing salinities and temperatures'
 time python3 setup_WOA_initial_conditions.py $src_dir/ $dst_dir/
 
