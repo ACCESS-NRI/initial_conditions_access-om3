@@ -4,10 +4,10 @@
 
 # This script submits 12 jobs to the pbs scheduler, one for each month
 
-HGRID=$HGRID
-VGRID=$VGRID
-INPUT_DIR=$INPUT_DIR
-OUTPUT_DIR=$OUTPUT_DIR
+HGRID=""
+VGRID=""
+INPUT_DIR=""
+OUTPUT_DIR=""
 
 # ---------------------------------
 # Usage
