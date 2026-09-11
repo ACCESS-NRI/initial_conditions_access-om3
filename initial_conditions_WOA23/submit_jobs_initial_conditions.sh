@@ -30,10 +30,14 @@ echo "OUTPUT_FILE=$OUTPUT_FILE"
 
 module purge
 module use /g/data/xp65/public/modules
-module load conda/analysis3
+module load conda/analysis3-26.08
 
 PATH=../ocean-ic/:$PATH
 echo $PATH
+
+# Verify Pythran extension is used
+PYTHONPATH="../ocean-ic${PYTHONPATH:+:${PYTHONPATH}}" \
+    python3 -c 'import regridder.apply_weights as raw; print("Loaded:", raw.__file__)'
 
 makeic.py --use_mpi --mom_version MOM6 WOA input.nc input.nc input.nc input.nc MOM ocean_hgrid.nc ocean_vgrid.nc "${OUTPUT_FILE}"
 

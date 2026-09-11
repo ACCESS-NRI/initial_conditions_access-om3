@@ -4,6 +4,10 @@
 
 # This script submits 12 jobs to the pbs scheduler, one for each month
 
+set -e
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
 HGRID=""
 VGRID=""
 INPUT_DIR=""
@@ -83,6 +87,9 @@ echo "INPUT_DIR=$INPUT_DIR"
 echo "OUTPUT_DIR=$OUTPUT_DIR"
 
 echo "All required arguments parsed successfully."
+
+# Check Pythran extension
+bash "${SCRIPT_DIR}/build_pythran.sh"
 
 # Create output directory if it doesn't exist
 mkdir -p "${OUTPUT_DIR}"
